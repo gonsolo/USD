@@ -233,9 +233,26 @@ def GetPythonInfo(context):
                                          _GetPythonLibraryFilename(context))
         elif Linux():
             pythonLibDir = sysconfig.get_config_var("LIBDIR")
-            pythonMultiarchSubdir = sysconfig.get_config_var("multiarchsubdir")
-            if pythonMultiarchSubdir:
-                pythonLibDir = pythonLibDir + pythonMultiarchSubdir
+            #pythonMultiarchSubdir = sysconfig.get_config_var("multiarchsubdir")
+            #if pythonMultiarchSubdir:
+            #    pythonLibDir = pythonLibDir + pythonMultiarchSubdir
+
+# gonzo https://github.com/PixarAnimationStudios/USD/pull/1674/files
+
+            # - pythonMultiarchSubdir = sysconfig.get_config_var("multiarchsubdir")
+            # - if pythonMultiarchSubdir:
+            # -    pythonLibDir = pythonLibDir + pythonMultiarchSubdir
+
+            if sysconfig.get_config_var("MULTIARCH"):
+                pythonMultiarchSubdir = sysconfig.get_config_var("multiarchsubdir")
+                if pythonMultiarchSubdir:
+                    if pythonMultiarchSubdir.startswith(os.sep):
+                        pythonMultiarchSubdir = pythonMultiarchSubdir[len(os.sep):]
+                    if not pythonLibDir.endswith(pythonMultiarchSubdir):
+                        pythonLibDir = os.path.join(pythonLibDir, pythonMultiarchSubdir)
+            print("gonzo: ", pythonLibDir)
+# gonzo
+
             pythonLibPath = os.path.join(pythonLibDir,
                                          _GetPythonLibraryFilename(context))
         elif MacOS():
